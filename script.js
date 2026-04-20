@@ -1,101 +1,96 @@
-
 const chat = document.getElementById("chat");
 
-let currentQuestion = 0;
+let questionIndex = 0;
 
 const questions = [
-
-"How are you feeling today?",
-"Do you prefer calm environments?",
+"I'd love to understand you better… how are you feeling today?",
+"Do you prefer calm conversations or energetic ones?",
+"When you're stressed, what helps you most?",
 "Do you enjoy deep conversations?",
-"Do you express emotions easily?",
-"Do you prefer working alone?"
-
+"Do you usually express emotions easily?"
 ];
 
-// Generate 200 questions
+// generate more questions
 for(let i=1;i<=200;i++){
-questions.push("Tell me something about your personality "+i+"?");
+questions.push("Tell me more about your communication style " + i + "?");
 }
-
-
-const responses = {
-
-hello:[
-"Hi 🌸 I'm Thinkly. I'm happy you're here.",
-"Hello, let's talk gently.",
-"Hey there, I'm here to listen."
-],
-
-how:[
-"I'm feeling calm and present 🌼",
-"I'm doing well, how about you?",
-"I'm good, thanks for asking."
-],
-
-thinkly:[
-"Thinkly is a calm conversational companion.",
-"Thinkly helps you reflect and communicate better.",
-"Thinkly is designed for emotional conversations."
-],
-
-default:[
-"That's interesting. Tell me more.",
-"I understand. Go on.",
-"I'm listening 🌸"
-]
-
-};
 
 
 function sendMessage(){
 
 let input = document.getElementById("userInput");
-let text = input.value;
+let userText = input.value;
 
-if(text.trim() === "") return;
+if(userText.trim() === "") return;
 
-addUserMessage(text);
+addUserMessage(userText);
 
-input.value = "";
+input.value="";
 
 setTimeout(()=>{
-
-let reply = generateReply(text.toLowerCase());
+let reply = detectIntent(userText.toLowerCase());
 addBotMessage(reply);
-
 },500);
 
 }
 
 
-function generateReply(text){
 
-if(text.includes("hello") || text.includes("hi")){
-return random(responses.hello);
+function detectIntent(text){
+
+// greeting
+if(text.includes("hello") || text.includes("hi") || text.includes("hey")){
+return "Hi 🌸 I'm Thinkly. How can I help you today?";
 }
 
-if(text.includes("how are you")){
-return random(responses.how);
+// about thinkly
+if(text.includes("thinkly") || text.includes("about")){
+return "Thinkly is a calm conversational companion designed to understand your communication style and emotions. I gently ask questions and adapt based on your responses 🌸";
 }
 
-if(text.includes("thinkly")){
-return random(responses.thinkly);
+// how it works
+if(text.includes("how") && text.includes("work")){
+return "I work by learning from your answers. As we talk, I understand your personality and communication patterns to create your Thinkly persona.";
 }
 
-if(currentQuestion < questions.length){
+// who are you
+if(text.includes("who are you")){
+return "I'm Thinkly 🌸 A gentle AI designed to talk with you and understand your personality.";
+}
 
-let question = questions[currentQuestion];
-currentQuestion++;
+// help
+if(text.includes("help")){
+return "You can ask me about Thinkly, talk about yourself, or I can ask questions to understand you better.";
+}
+
+// start questions
+if(text.includes("start") || text.includes("begin")){
+return nextQuestion();
+}
+
+// default → ask question
+return nextQuestion();
+
+}
+
+
+
+function nextQuestion(){
+
+if(questionIndex < questions.length){
+
+let question = questions[questionIndex];
+questionIndex++;
+
 updateProgress();
 
 return question;
 
 }
 
-return random(responses.default);
-
+return "I've learned a lot about you 🌸 Thank you for sharing.";
 }
+
 
 
 function addUserMessage(text){
@@ -108,23 +103,15 @@ chat.innerHTML += `<div class="bot-message">${text}</div>`;
 chat.scrollTop = chat.scrollHeight;
 }
 
-function random(arr){
-return arr[Math.floor(Math.random()*arr.length)];
-}
-
 function updateProgress(){
-
-let progress = (currentQuestion/questions.length)*100;
+let progress = (questionIndex/questions.length)*100;
 document.getElementById("progressBar").style.width = progress+"%";
-
 }
+
+
 
 window.onload = () => {
 
-addBotMessage("Hi 🌸 I'm Thinkly. Let's talk and understand you better.");
+addBotMessage("Hello 🌸 I'm Thinkly. How can I help you today?");
 
-setTimeout(()=>{
-addBotMessage(questions[0]);
-},800);
-
-};
+}
